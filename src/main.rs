@@ -1,9 +1,11 @@
-use alloy::providers::{Provider, ProviderBuilder};
+use alloy::{providers::{Provider, ProviderBuilder}, primitives::{Address}};
 use anyhow::Result;
 use url::Url;
 
-async fn get_block_number(rpc_url: Url) -> Result<u64> {
-    let provider = ProviderBuilder::new().connect_http(rpc_url);
+mod level2_balance_query;
+use level2_balance_query::balance::get_eth_balance;
+
+async fn get_block_number(provider: &impl Provider) -> Result<u64> {
     let block_number: u64 = provider.get_block_number().await?;
     Ok(block_number)
 }
@@ -13,10 +15,18 @@ async fn get_block_number(rpc_url: Url) -> Result<u64> {
 async fn main() -> Result<()> {
     dotenvy::dotenv().ok();
     let rpc_url: Url = std::env::var("ARBITRUM_SEPOLIA_RPC")?.parse()?;
-    print!("{}", rpc_url);
+    let account_address: Address = std::env::var("ACCOUNT_ADDRESS")?.parse()?;
+    println!("{}, {}", rpc_url, account_address);
 
-    let block = get_block_number(rpc_url.clone()).await?;
-    println!("当前最新区块高度: {}", block);
+    let provider = ProviderBuilder::new().connect_http(rpc_url.clone());
+
+    // Task 1
+    let block: u64 = get_block_number(&provider).await?;
+    println!("Task 1 当前最新区块高度: {}", block);
+
+    // Task 2
+    let balance: String = get_eth_balance(&provider, account_address.clone()).await?;
+    println!("Task 2 账户余额: {}", balance);
 
     Ok(())
 }
