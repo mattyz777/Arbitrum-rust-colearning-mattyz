@@ -1,9 +1,14 @@
 use alloy::{providers::{Provider, ProviderBuilder}, primitives::{Address}};
+use alloy::network::Ethereum; 
 use anyhow::Result;
 use url::Url;
 
 mod level2_balance_query;
 use level2_balance_query::balance::get_eth_balance;
+
+mod task3_gas;
+use task3_gas::gas::get_estimated_gas_fee_eth;
+
 
 async fn get_block_number(provider: &impl Provider) -> Result<u64> {
     let block_number: u64 = provider.get_block_number().await?;
@@ -28,5 +33,8 @@ async fn main() -> Result<()> {
     let balance: String = get_eth_balance(&provider, account_address.clone()).await?;
     println!("Task 2 账户余额: {}", balance);
 
+    // Task 3
+    let gas = get_estimated_gas_fee_eth(&provider).await?;
+    println!("Task 3 预估的Gas Fee(ETH): {}", gas);
     Ok(())
 }
