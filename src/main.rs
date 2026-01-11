@@ -11,6 +11,9 @@ use task3_gas::gas::get_estimated_gas_fee_eth;
 mod task4_transfer;
 use task4_transfer::transfer::send_eth;
 
+mod task5_sol;
+use task5_sol::erc20_query::query_usdc_info;
+
 async fn get_block_number(provider: &impl Provider) -> Result<u64> {
     let block_number: u64 = provider.get_block_number().await?;
     Ok(block_number)
@@ -47,7 +50,12 @@ async fn main() -> Result<()> {
     let result4 = send_eth(&provider, "", &to_address, "0.0001").await?;
     println!("Task 4 转账 {}", result4);
     
-
+    // Task 5
+    // - 截图在images/task5 文件夹中
+    let (name, symbol) = query_usdc_info(&provider, account_address).await?;
+    println!("Task 5");
+    println!("Name:      {}", name);
+    println!("Symbol:    {}", symbol);
 
     Ok(())
 }
