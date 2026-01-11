@@ -10,7 +10,7 @@ pub async fn query_usdc_info(
     provider: &impl Provider,
     account: Address,
 ) -> Result<(String, String)> {
-    let addr:Address = std::env::var("SEPOLIA_USDC_ADDRESS")?.parse()?;
+    let addr:Address = std::env::var("ARB_SEPOLIA_WETH")?.parse()?;
     let address = IERC20::new(addr, provider);
 
     let name = address.name().call().await?;
